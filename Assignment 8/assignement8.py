@@ -15,3 +15,4 @@ if word in dictionary:
     print('The translation is:', dictionary[word] )
 else:
     print('Sorry, that word has no translation in the dictionary')
+#There seems to be a problem with the json file
