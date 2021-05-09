@@ -1,0 +1,1 @@
+dict_values(["What's up", 'Nairobi', 'one', 'two'])dict_values(['Getting drunk', 'Keypad phone', 'Phone'])

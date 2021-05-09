@@ -1,0 +1,1 @@
+{'Rada': "What's up", 'Kanairo': 'Nairobi', 'Mujamo': 'one', 'mbwegze': 'two'}{'kata maji': 'Getting drunk', 'Kabore': 'Keypad phone', 'menje': 'Phone'}
