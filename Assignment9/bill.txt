@@ -1,0 +1,7 @@
+"First Name, connection type, address, Town, County, Consumption, bill "
+"Bruce Felix Macharia Rural/Residential 588 Kangema Muranga 30.0 330.0"
+"Mitchell Mwihaki Mwangi Rural/Residential 1000 Ngong' Kajiado  50.0, 550.0"
+"John  Kiai Kinyua Urban/Residential 588 Thika Murang'a 40.0 686.4000000000001"
+"John  Kagiri Mwangi Urban/Residential 600 Nairobi Nairobi 40.0 686.4000000000001"
+"Catherine  Wambui Wainaina Rural/Residential 599 Gitaru Kiambu 40.0 440.00000000000006"
+"Lydia Adenga Mark Brian Rural/Residential 400 Rongai Nairobi 100.0 1100.0"

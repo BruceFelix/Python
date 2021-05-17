@@ -3,13 +3,22 @@
 #Program description: Billing program for  Kenya power and Lighting company
 #Programmer: Bruce Felix Macharia /aspiring PYTHONISTA
 ###################################################################################
+#imports
+import mysql.connector
+from mysql.connector import Error
+import json
+#******************************************************************
+
+#******************************************************************
 #functions
 def discount_given(kilowatt):
     """
     This function calculates the amount of discount to be given according to the kilowatts consumed
     It takes a float unit as a paramter Which is the kilowatts for that month. 
     """
-    if 200 <= kilowatt <= 450:#for less than 451 to 200
+    if 0 < kilowatt > 199:
+        kilowatt = kilowatt
+    elif 200 <= kilowatt <= 450:#for less than 451 to 200
         kilowatt = kilowatt * (97/100)
     elif 451 <= kilowatt <= 500:#for less than 501 to 451
         kilowatt = kilowatt * (95/100)
@@ -22,7 +31,7 @@ def discount_given(kilowatt):
     elif kilowatt >= 802:# for greater than 802 or 802
         kilowatt = kilowatt * (95/100)
     return kilowatt # output when called results in kilowatts with a discount
-def get_area(town):
+def get_area(town):  
     """
     This function takes a string of Towns and converts them to list of towns.
     The the user enters the town they hail from and if it is in the list it is considered an urban center else rural area.
@@ -31,7 +40,7 @@ def get_area(town):
     areas = """Baragoi,Bungoma,Busia,Butere,Dadaab,Diani Beach,Eldoret,Emali,Embu,Garissa,Gede,Hola,Homa Bay,Isiolo,Kitui,Kibwezi,Kajiado,Kakamega,
     Kakuma,Kapenguria,Kerich,Keroka ,Kiambu,Kisii,Kisumu,Kitale,Lamu,Langata,Litein,Lodwar,Lokichoggio,Londiani,Loyangalani,Machakos,Makindu,Malindi,
     Mandera,Maralal,Marsabit,Meru,Mombasa,Moyale,Mumias,Muranga,Mutomo,Nairobi,Naivasha,Nakuru,Namanga,Nanyuki,Naro Moru,Narok,Nyahururu,Nyeri,Ruiru,
-    Shimoni,Takaungu,Thika,Vihiga,Voi,Wajir,Watamu,Webuye,Wote,Wundanyi""".split(",")#converts string to list
+    Shimoni,Takaungu,Thika,Vihiga,Voi,Wajir,Watamu,Webuye,Wote,Wundanyi""".split(",")#converts string to a list  of towns in Kenya
 
     if town in areas: #checks if town is in the list
         town = "urban"
@@ -86,29 +95,105 @@ def monthly_bill(area,kilowatt):
         bill = 104/100 * (kilowatt * 30)
         gross_bill = 118/100 * (bill)
     return gross_bill
-
+def new_customer():
+    print("Kindly enter Customer's First name: ")
+    first_name = input()
+    print("Kinldy enter Customer's Middle name: ")
+    middle_name = input()
+    print("Kindly enter Customer's Lastname: ")
+    last_name = input()
+    full_name = first_name +" " + middle_name+ " " + last_name# Forming his name in full
+    print("Enter "+first_name +"'s" + " the billing address and County ")
+    address = input("Address: ")
+    county = input("County: ")
+    town = input("Enter Customer's Town : ")
+    place = get_area(town)
+    kilowatt = float(input("What's their bill this month: " ))
+    discount_given(kilowatt)
+    bill = monthly_bill(place,kilowatt)# calls the bill function to get the gross bill   
+    print("################################################################################")
+    print("\tCustomer Details and total bill")
+    print("________________________________________________________________________________")
+    print("Name:",full_name)
+    print("Connection type is: ",place)
+    print("From",address,town,county)
+    print("Electricty consumed",str(kilowatt))
+    print("Total bill",bill)
+    print("#######################################################################################")
+    details = full_name + " " + place + " " + address + " " + town+ " " +  county+ " " +  str(kilowatt) + " " + str(bill)
+    with open("bill.txt", "a+") as file:
+        file.seek(0) # Move read cursor to the start of file.
+        data = file.read(100)#if the file is not empty then append "\n"
+        if len(data) > 0:
+            file.write("\n")
+        file.write(json.dumps(details))#Append text at the end of the file
+    def database():
+        try: 
+            connection =  mysql.connector.connect(
+                host = "localhost",
+                username = "root",
+                password = "dbms",
+                database = "bill"
+            )
+            #create a table if it is not there
+            table = """
+            CREATE TABLE IF IS NOT EXISTS People(
+                personID int  PRIMARY KEY NOT NULL AUTO_INCREMENT,
+                first_name VARCHAR(50) NOT NULL,
+                middle_name VARCHAR(50) NOT NULL,
+                last_name VARCHAR(50) NOT NULL,
+                address int NOT NULL,
+                town VARCHAR(50) NOT NULL,
+                county VARCHAR(50) NOT NULL,
+                consumption VARCHAR(50) NOT NULL,
+                bill int NOT NULL
+            )"""
+            #then append values
+            if connection.is_connected():
+                cursor = connection.cursor()
+                cursor.execute(table)
+                print("Table is created")
+                sql = """
+                    INSERTING INTO Person (personID, first_name, middle_name, last_name,
+                    address, town, county, consumption,bill)
+                    VALUES(%s,%s,%s,%s,%s,%s,%f,%f)""" , (first_name, middle_name,last_name
+                    ,address, town, county, kilowatt, bill)
+                cursor.execute(sql)
+                print("records inserted")
+                connection.commit()
+                #Display the the data  
+        except Error as e: 
+            print("Error while connecting to MySQL: {}" .format(e))
+        finally:
+            if(connection.is_connected()):
+                cursor.execute("SELECT * FROM Person")
+                for x in cursor:
+                    print(x)
+                cursor.close()
+                connection.close()
+                print("MySQL connection is closed")
+    database()
 ###########################################################################
-print("Kindly enter your firstname: ")
-first_name = input()
-print("Kinldy enter your Middle name: ")
-middle_name = input()
-print("Kindly enter your Lastname: ")
-last_name = input()
-full_name = first_name + middle_name + last_name# Forming his name in full
-print(first_name,"Enter your billing address and County ")
-address = input("Address: ")
-county = input("County: ")
-town = input("Enter the Town you come from: ")
-place = get_area(town)
-kilowatt =( discount_given(float(input("What was your bill this month: "))))# calls the discount function and takes the input function as the parameter.
-bill = monthly_bill(place,kilowatt)# calls the bill function to get the gross bill   
-#4 4)	Print out a monthly receipt of the Kilowatts consumed, taxes paid, whether it is residential, or an industrial.
-#  Format your output as you would see it on your electric bill at home.
-print("################################################################################")
-print("\tCustomer Details and total bill")
-print("Name:",full_name)
-print("Connection type is: ",place)
-print("From",address,town,county)
-print("Total bill",bill)
-print("#######################################################################################")
+#Main
+while True:
+    print("__________________________________________________________")
+    print("_________________________ MENU____________________________\nChoose")
+    print("Generate customer bill - 1")
+    print("View database and bill.txt - 2")
+    # print("View bill.txt file - 3 ")
+    print("QUIT - 3")
+    choice = input()
+    if choice == "1":
+        new_customer()
+    elif choice == "2":
+        with open("bill.txt", "r") as read_file:
+            print(read_file.read())
+    elif choice == "3":
+        print("Quiting Application")
+        break
+    else:
+        print("Choose valid choice")
+
+
+
 
