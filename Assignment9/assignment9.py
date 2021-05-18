@@ -4,8 +4,8 @@
 #Programmer: Bruce Felix Macharia /aspiring PYTHONISTA
 ###################################################################################
 #imports
-import mysql.connector
-from mysql.connector import Error
+from getpass import getpass
+from mysql.connector import connect, Error
 import json
 #******************************************************************
 
@@ -127,54 +127,55 @@ def new_customer():
         if len(data) > 0:
             file.write("\n")
         file.write(json.dumps(details))#Append text at the end of the file
-    def database():
-        try: 
-            connection =  mysql.connector.connect(
-                host = "localhost",
-                username = "root",
-                password = "dbms",
-                database = "bill"
-            )
-            #create a table if it is not there
-            table = """
-            CREATE TABLE IF IS NOT EXISTS People(
-                personID int  PRIMARY KEY NOT NULL AUTO_INCREMENT,
-                first_name VARCHAR(50) NOT NULL,
-                middle_name VARCHAR(50) NOT NULL,
-                last_name VARCHAR(50) NOT NULL,
-                address int NOT NULL,
-                town VARCHAR(50) NOT NULL,
-                county VARCHAR(50) NOT NULL,
-                consumption VARCHAR(50) NOT NULL,
-                bill int NOT NULL
-            )"""
-            #then append values
-            if connection.is_connected():
-                cursor = connection.cursor()
-                cursor.execute(table)
-                print("Table is created")
-                sql = """
-                    INSERTING INTO Person (personID, first_name, middle_name, last_name,
-                    address, town, county, consumption,bill)
-                    VALUES(%s,%s,%s,%s,%s,%s,%f,%f)""" , (first_name, middle_name,last_name
-                    ,address, town, county, kilowatt, bill)
-                cursor.execute(sql)
-                print("records inserted")
-                connection.commit()
-                #Display the the data  
-        except Error as e: 
-            print("Error while connecting to MySQL: {}" .format(e))
-        finally:
-            if(connection.is_connected()):
-                cursor.execute("SELECT * FROM Person")
-                for x in cursor:
-                    print(x)
-                cursor.close()
-                connection.close()
-                print("MySQL connection is closed")
-    database()
+    return details
+def database(details):
+    try:
+        with connect(
+            host = "localhost",
+            user = getpass("Enter username: "),
+            password = getpass("Enter password: "),#obscures the input
+            # database = input("Enter database: ")
+        ) as connection:
+            pass
+    except Error as e:
+        print(e)
+        #create a table if it is not there
+    #     table = """
+    #     CREATE TABLE IF NOT EXISTS People(
+    #         personID int  PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    #         first_name VARCHAR(50) NOT NULL,
+    #         middle_name VARCHAR(50) NOT NULL,
+    #         last_name VARCHAR(50) NOT NULL,
+    #         address int NOT NULL,
+    #         town VARCHAR(50) NOT NULL,
+    #         county VARCHAR(50) NOT NULL,
+    #         consumption VARCHAR(50) NOT NULL,
+    #         bill int NOT NULL
+    #     )"""
+    #     #then append values
+    #     cursor = connection.cursor()
+    #     cursor.execute(table)
+    #     # print("Table is created")
+    #     sql = """
+    #         INSERTING INTO People (personID, first_name, middle_name, last_name,
+    #         address, town, county, consumption,bill)
+    #         VALUES(%s,%s,%s,%s,%s,%s,%f,%f)""" , (first_name, middle_name,last_name
+    #         ,address, town, county, kilowatt, bill)
+    #     cursor.execute(sql)
+    #     print("records inserted")
+    #     connection.commit()
+    #     #Display the the data  
+    #     people =cursor.execute("SELECT * FROM People")
+    #     print(people)
+    #     cursor.close()
+    #     connection.close()
+    #     print("MySQL connection is closed")
+    # except Error as e: 
+    #     print("Error while connecting to MySQL: {}" .format(e))
 ###########################################################################
 #Main
+details = new_customer()
+database(details)
 while True:
     print("__________________________________________________________")
     print("_________________________ MENU____________________________\nChoose")

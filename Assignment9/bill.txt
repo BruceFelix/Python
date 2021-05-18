@@ -5,3 +5,5 @@
 "John  Kagiri Mwangi Urban/Residential 600 Nairobi Nairobi 40.0 686.4000000000001"
 "Catherine  Wambui Wainaina Rural/Residential 599 Gitaru Kiambu 40.0 440.00000000000006"
 "Lydia Adenga Mark Brian Rural/Residential 400 Rongai Nairobi 100.0 1100.0"
+
+"fafas dad adfafd Rural/Residential ada adfa afaf 100.0 1100.0"
