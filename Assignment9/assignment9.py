@@ -1,15 +1,11 @@
-###################################################################################
 #Program name: Assignment 9
 #Program description: Billing program for  Kenya power and Lighting company
 #Programmer: Bruce Felix Macharia /aspiring PYTHONISTA
 ###################################################################################
 #imports
-from getpass import getpass
-from mysql.connector import connect, Error
-import json
-#******************************************************************
-
-#******************************************************************
+from getpass import getpass # This module is used to hide the password and username for security purposes 
+from mysql.connector import connect, Error, connection, cursor # importing the functions individually
+import json # To convert the data 
 #functions
 def discount_given(kilowatt):
     """
@@ -95,20 +91,22 @@ def monthly_bill(area,kilowatt):
         bill = 104/100 * (kilowatt * 30)
         gross_bill = 118/100 * (bill)
     return gross_bill
-def new_customer():
+def generate_bill_update_database():
+    #Capturing user data
+    print("Enter customer's details first: ")
     print("Kindly enter Customer's First name: ")
     first_name = input()
     print("Kinldy enter Customer's Middle name: ")
     middle_name = input()
     print("Kindly enter Customer's Lastname: ")
     last_name = input()
-    full_name = first_name +" " + middle_name+ " " + last_name# Forming his name in full
-    print("Enter "+first_name +"'s" + " the billing address and County ")
     address = input("Address: ")
     county = input("County: ")
     town = input("Enter Customer's Town : ")
-    place = get_area(town)
     kilowatt = float(input("What's their bill this month: " ))
+    full_name = first_name +" " + middle_name+ " " + last_name# Forming his name in full
+    print("Enter "+first_name +"'s" + " the billing address and County ")
+    place = get_area(town)
     discount_given(kilowatt)
     bill = monthly_bill(place,kilowatt)# calls the bill function to get the gross bill   
     print("################################################################################")
@@ -121,75 +119,87 @@ def new_customer():
     print("Total bill",bill)
     print("#######################################################################################")
     details = full_name + " " + place + " " + address + " " + town+ " " +  county+ " " +  str(kilowatt) + " " + str(bill)
-    with open("bill.txt", "a+") as file:
+    with open("bill.txt", "a+") as file:# updates the customer's details to this file
         file.seek(0) # Move read cursor to the start of file.
         data = file.read(100)#if the file is not empty then append "\n"
         if len(data) > 0:
             file.write("\n")
         file.write(json.dumps(details))#Append text at the end of the file
-    return details
-def database(details):
-    try:
-        with connect(
+
+    try:# to ensure connection happens 
+        connection = connect(
             host = "localhost",
-            user = getpass("Enter username: "),
+            username = getpass("Enter username: "),# hides the username's name
             password = getpass("Enter password: "),#obscures the input
-            # database = input("Enter database: ")
-        ) as connection:
-            pass
+            database = "bill"
+        )
     except Error as e:
         print(e)
-        #create a table if it is not there
-    #     table = """
-    #     CREATE TABLE IF NOT EXISTS People(
-    #         personID int  PRIMARY KEY NOT NULL AUTO_INCREMENT,
-    #         first_name VARCHAR(50) NOT NULL,
-    #         middle_name VARCHAR(50) NOT NULL,
-    #         last_name VARCHAR(50) NOT NULL,
-    #         address int NOT NULL,
-    #         town VARCHAR(50) NOT NULL,
-    #         county VARCHAR(50) NOT NULL,
-    #         consumption VARCHAR(50) NOT NULL,
-    #         bill int NOT NULL
-    #     )"""
-    #     #then append values
-    #     cursor = connection.cursor()
-    #     cursor.execute(table)
-    #     # print("Table is created")
-    #     sql = """
-    #         INSERTING INTO People (personID, first_name, middle_name, last_name,
-    #         address, town, county, consumption,bill)
-    #         VALUES(%s,%s,%s,%s,%s,%s,%f,%f)""" , (first_name, middle_name,last_name
-    #         ,address, town, county, kilowatt, bill)
-    #     cursor.execute(sql)
-    #     print("records inserted")
-    #     connection.commit()
-    #     #Display the the data  
-    #     people =cursor.execute("SELECT * FROM People")
-    #     print(people)
-    #     cursor.close()
-    #     connection.close()
-    #     print("MySQL connection is closed")
-    # except Error as e: 
-    #     print("Error while connecting to MySQL: {}" .format(e))
-###########################################################################
-#Main
-details = new_customer()
-database(details)
+    table = """
+        CREATE TABLE IF NOT EXISTS People(
+        personid INT  PRIMARY KEY AUTO_INCREMENT,
+        first_name VARCHAR(50),
+        middle_name VARCHAR(50),
+        last_name VARCHAR(50),
+        address VARCHAR(50),
+        town VARCHAR(50),
+        county VARCHAR(50),
+        consumption INT
+        )
+        """# to create the table if it doesn't exist
+    inserting_values = """
+        INSERT INTO People(first_name, middle_name, last_name, address, town, county, consumption)
+        VALUES(%s, %s, %s, %s, %s, %s, %s)
+        """# this is to add the values to the People table
+    values = (first_name, middle_name, last_name, address, town, county, kilowatt)
+    cursor= connection.cursor() # creates the cursor object
+    cursor.execute(table)# creates a table
+    cursor.execute(inserting_values,values)#takes 2 parameters to append to the table
+    connection.commit() # updatesthe database
+    cursor.close()# closes the cursor object
+    connection.close()# Terminates the database connection
+    print("Records picked")
+def view_database():
+    """
+    This function is used to view the records in the database.
+    """
+    try:
+        connection = connect(
+            host = "localhost",
+            username = getpass("Enter username: "),
+            password = getpass("Enter password: "),#obscures the input
+            database = "bill"
+        )
+    except Error as e:
+        print(e)
+    cursor = connection.cursor()
+    show_details = "SELECT * FROM People"
+    cursor.execute(show_details)
+    result = cursor.fetchall()
+    print("\t Records")
+    for row in result:
+        print(row)
+    cursor.close()
+    connection.close()
+####################################################
 while True:
     print("__________________________________________________________")
     print("_________________________ MENU____________________________\nChoose")
-    print("Generate customer bill - 1")
-    print("View database and bill.txt - 2")
-    # print("View bill.txt file - 3 ")
-    print("QUIT - 3")
+    print("Generate customer bill and feed database -1")
+    print("To view database - 2")
+    print("View bill.txt file - 3 ")
+    print("QUIT - 4")
     choice = input()
     if choice == "1":
-        new_customer()
+        generate_bill_update_database()
     elif choice == "2":
+        print("Presenting data from the database")
+        view_database()
+    elif choice == "3":
+        print("This is the bill.txt file where data is stored")
         with open("bill.txt", "r") as read_file:
             print(read_file.read())
-    elif choice == "3":
+    elif choice == "4":
         print("Quiting Application")
         break
     else:
