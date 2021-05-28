@@ -60,5 +60,6 @@ values = (first_name,last_name,ssn,email,phonenumber, address, city, state, zipc
 
 cursor = connection.cursor()
 cursor.execute(table)
+cursor.execute("DESCRIBE TABLE ")
 cursor.close()
 connection.commit()
