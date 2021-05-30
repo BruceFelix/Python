@@ -1,6 +1,5 @@
 import csv 
 from getpass import getpass
-from logging import lastResort
 from mysql.connector import connect, Error, connection, cursor
 from faker import Faker
  
@@ -20,7 +19,7 @@ try:# check if it is connected
     connection = connect( host = "localhost",username = getpass("Enter username: "), password = getpass("Enter password: "),database = "employee")
 except Error as e:
         print(e)
-cursor = connection.cursor()# creates an object cursor
+cursor = connection.cursor()# creates an object cursor named cursor
 
 #################################################
 #funtions
