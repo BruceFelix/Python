@@ -24,7 +24,7 @@ The two exams were python(Advanced) and python(Expert) exam.
 
 ### My exams performance
 #### Advance Exam
-
-
+![advance test score](https://user-images.githubusercontent.com/44478872/120116283-254a2680-c190-11eb-9da7-cab8d04ad65e.PNG)
 #### Expert Exam
+![expert exam](https://user-images.githubusercontent.com/44478872/120116312-4579e580-c190-11eb-8f29-ea1782f17db0.PNG)
 
