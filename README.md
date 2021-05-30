@@ -26,6 +26,5 @@ The two exams were python(Advanced) and python(Expert) exam.
 #### Advance Exam
 
 
-
 #### Expert Exam
 
