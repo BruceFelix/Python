@@ -18,6 +18,7 @@ You design a Program to come up with a software to convert:
 Your program should be menu driven with Options to pick from the running program.
  
 Your screen should have something similar to the screenshot shown below.
+![image](https://user-images.githubusercontent.com/44478872/120902606-ef061e80-c649-11eb-8cc6-ffe6a1e2820a.png)
 
   
 In the program, consider using Loops (FOR or a While Loop), consider using if, elif and else statements, consider declaring and using functions and methods in your design.
