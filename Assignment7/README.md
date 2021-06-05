@@ -28,7 +28,9 @@ with open('contacts.txt', 'w') as file:  # Use file to refer to the file object
  
 Notice that we didn’t have to write “file.close()”. That will automatically be called when you use the with open for this operation.
 Make the Menu to be able to INSERT new contacts, EDIT existing contacts, DELETE unwanted Contacts, Update an existing Contact(s).
- 
+
+ ![image](https://user-images.githubusercontent.com/44478872/120902790-01348c80-c64b-11eb-9a44-d868551b2b2d.png)
+
 You may wanna use a menu driven function to accomplish this feat. In your arsenal are the IF…ELSE…ELIF, input(), print(), Dictionary, and use Python functions.
  This program is due in 7 days from today. Good luck and good job. Consult with your Kamkunji in case of any questions.
  
